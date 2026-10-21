@@ -19,6 +19,7 @@ import '../model/models.dart';
 import '../model/tags.dart';
 import '../state/app_state.dart';
 import '../theme/onote_theme.dart';
+import '../theme/tokens.dart';
 import '../ui/color_picker.dart';
 import 'ink_painter.dart';
 
@@ -412,11 +413,10 @@ class PortalContent extends StatelessWidget {
 }
 
 BoxDecoration _portalBorder(BuildContext context) {
-  final dark = Theme.of(context).brightness == Brightness.dark;
   return BoxDecoration(
     borderRadius: BorderRadius.circular(6),
     border:
-        Border.all(color: dark ? OnoteColors.night300 : OnoteColors.paper300),
+        Border.all(color: Theme.of(context).surfaces.border),
   );
 }
 

@@ -9,6 +9,7 @@ import 'inline_table.dart';
 import '../model/tags.dart';
 import '../state/app_state.dart';
 import '../theme/onote_theme.dart';
+import '../theme/tokens.dart';
 import 'onote_text_editor.dart';
 
 /// Text block — the **host** for a text container, not an editor.
@@ -406,6 +407,7 @@ class _TextBlockViewState extends State<TextBlockView> {
       baseStyle: TextBlockView.baseStyle(widget.block, dark: dark),
       inset: TextBlockView.insetFor(widget.block),
       dark: dark,
+      surfaces: Theme.of(context).surfaces,
       // **Name first, then the marks.** The caret is already blinking here,
       // so "Type here" is the redundancy the owner named; and the four
       // pairs used to read syntax-first ("# heading"), which is the exact

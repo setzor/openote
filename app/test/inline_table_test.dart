@@ -31,6 +31,7 @@ import 'package:openote/l10n/l10n.dart';
 import 'package:openote/markdown/md_render.dart';
 import 'package:openote/model/inline_atom.dart';
 import 'package:openote/theme/onote_theme.dart';
+import 'package:openote/theme/tokens.dart';
 
 void main() {
   /// A block's content, standing in for the real one. The host reads and
@@ -81,7 +82,10 @@ void main() {
   TableData stored() =>
       TableData.from(InlineAtom.allIn(content)['t1']!.content);
 
-  Widget frame(Widget child) => MaterialApp(
+  /// [darkMode] flips the harness between the two themes — a table's
+  /// border is a surface, so the THEME the MaterialApp wears is half of
+  /// what "drawn dark" means (the controller's own flags are the other).
+  Widget frame(Widget child, {bool darkMode = false}) => MaterialApp(
         localizationsDelegates: kOnoteLocalizations,
         supportedLocales: kOnoteLocales,
         // **On a desktop platform, because the shipped app is one.**
@@ -92,6 +96,9 @@ void main() {
         // no user has.
         theme: onoteTheme(Brightness.light)
             .copyWith(platform: TargetPlatform.windows),
+        darkTheme: onoteTheme(Brightness.dark)
+            .copyWith(platform: TargetPlatform.windows),
+        themeMode: darkMode ? ThemeMode.dark : ThemeMode.light,
         home: Scaffold(
           body: Align(
             alignment: Alignment.topLeft,
@@ -1011,10 +1018,20 @@ void main() {
     testWidgets('in the dark, drawn dark', (t) async {
       final c = await editor(t);
       final light = t.widget<Table>(find.byType(Table));
-      // What a theme change does: the engine sets this on every build
-      // (live_markdown_engine.dart:1127) and the field rebuilds around it.
-      c.dark = true;
+      // What a theme change does: the engine sets both facts on every build
+      // (live_markdown_engine.dart, `setTheme`) AND the MaterialApp above
+      // wears the new theme, because a table's border is a surface and
+      // surfaces come from the enclosing theme, not from the controller.
+      c.setTheme(dark: true, surfaces: OnoteSurfaces.dark);
       c.refreshSpans();
+      await t.pumpWidget(frame(
+          TextField(
+              controller: c,
+              maxLines: null,
+              style: const TextStyle(fontSize: 14),
+              strutStyle: StrutStyle.fromTextStyle(
+                  const TextStyle(fontSize: 14), forceStrutHeight: false)),
+          darkMode: true));
       await t.pumpAndSettle();
       final dark = t.widget<Table>(find.byType(Table));
       expect(dark.border, isNot(light.border),

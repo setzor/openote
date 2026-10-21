@@ -15,6 +15,7 @@ import '../editor/text_block_view.dart';
 import '../model/models.dart';
 import '../state/app_state.dart';
 import '../theme/onote_theme.dart';
+import '../theme/tokens.dart';
 import '../ui/color_picker.dart';
 import '../ui/context_menus.dart';
 import 'canvas_controller.dart';
@@ -389,7 +390,7 @@ class _BlockViewState extends State<BlockView> {
             decoration: BoxDecoration(
               color: live
                   ? primaryColor.withValues(alpha: .85)
-                  : (dark ? OnoteColors.night200 : OnoteColors.paper200),
+                  : context.surfaces.chrome2,
               borderRadius: const BorderRadius.vertical(top: Radius.circular(8)),
             ),
             child: Row(
@@ -684,7 +685,7 @@ class _BlockViewState extends State<BlockView> {
                       // up, and it is a shape the page will never print. The border
                       // below already says "this one", which is what hover is for.
                       (editing || selected
-                          ? (dark ? OnoteColors.night50 : OnoteColors.paper0)
+                          ? context.surfaces.canvas
                           : Colors.transparent),
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(

@@ -333,6 +333,29 @@ class OnoteSurfaces extends ThemeExtension<OnoteSurfaces> {
     textDisabled: OnoteColors.moon400,
   );
 
+  /// **True Black** — the OLED appearance (#12). Same text roles as Night
+  /// ink's [dark], because the words are not what changes: the surfaces are.
+  ///
+  /// The ramps stay one step apart — canvas deepest, chrome one above it,
+  /// chrome2/raised two — so "the page is the hero" (the rule [canvas]'s
+  /// comment states) survives on a panel that emits no light of its own.
+  /// What changes is the base: pure #000000 for the canvas, where an OLED
+  /// pixel switches fully off, and the near-black greys above it stay close
+  /// enough that a hairline border is still visible and far enough that
+  /// chrome does not merge into the page. Warm tint is dropped on purpose —
+  /// Night ink's purple cast is a look, not a legibility device, and the
+  /// person choosing True Black has chosen neutrality.
+  static const trueBlack = OnoteSurfaces(
+    canvas: Color(0xFF000000),
+    chrome: Color(0xFF0A0A0A),
+    chrome2: Color(0xFF141414),
+    raised: Color(0xFF141414),
+    border: Color(0xFF242424),
+    textPrimary: OnoteColors.moon100,
+    textSecondary: OnoteColors.moon300,
+    textDisabled: OnoteColors.moon400,
+  );
+
   @override
   OnoteSurfaces copyWith({
     Color? canvas,

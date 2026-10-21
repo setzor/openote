@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import '../model/models.dart';
 import '../state/app_state.dart';
 import '../theme/onote_theme.dart';
+import '../theme/tokens.dart';
 import 'wrap_selection.dart';
 
 /// A trello-style task board on the page (PLANNING.md: "having the ability
@@ -355,7 +356,7 @@ class _BoardBlockViewState extends State<BoardBlockView> {
       width: 210,
       padding: const EdgeInsets.all(6),
       decoration: BoxDecoration(
-        color: dark ? OnoteColors.night100 : OnoteColors.paper100,
+        color: context.surfaces.chrome2,
         borderRadius: BorderRadius.circular(8),
       ),
       child: Column(
@@ -481,7 +482,7 @@ class _BoardBlockViewState extends State<BoardBlockView> {
 
   Widget _card(BuildContext context, int col, int idx, String text, bool dark) {
     final card = Material(
-      color: dark ? OnoteColors.night0 : OnoteColors.paper0,
+      color: context.surfaces.canvas,
       // `shape` rather than `borderRadius` so the keyboard cursor can ride on
       // the same outline — Material forbids both being set at once. The ring
       // is the only way a keyboard user can tell which card they are on.

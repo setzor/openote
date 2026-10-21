@@ -128,7 +128,7 @@ class _FlashcardBlockViewState extends State<FlashcardBlockView> {
   /// question.
   Widget _editor(bool dark) => Container(
         decoration: BoxDecoration(
-          color: dark ? OnoteColors.night100 : Colors.white,
+          color: dark ? context.surfaces.chrome2 : Colors.white,
           borderRadius: OnoteRadius.xlAll,
           border:
               Border.all(color: OnoteColors.brass400.withValues(alpha: .8), width: 1.5),

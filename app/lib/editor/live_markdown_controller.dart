@@ -57,7 +57,9 @@ const double kEditorCaretMargin = 3.0;
 /// text verbatim, it falls back to an unstyled span, so editing can never
 /// corrupt or desync.
 class LiveMarkdownController extends TextEditingController {
-  LiveMarkdownController({super.text, required bool dark}) : _dark = dark;
+  LiveMarkdownController({super.text, required bool dark})
+      : _dark = dark,
+        surfaces = dark ? OnoteSurfaces.dark : OnoteSurfaces.light;
 
   /// Light or dark, set by the engine on every build.
   ///
@@ -73,6 +75,23 @@ class LiveMarkdownController extends TextEditingController {
   }
 
   bool _dark;
+
+  /// The appearance's surface roles, set by the engine on the same build that
+  /// sets [dark]. A separate field rather than derived from brightness,
+  /// because True Black and Night ink share a brightness and differ here —
+  /// the inline code tint is a SURFACE (`chrome2`), and on True Black it must
+  /// follow the appearance, not the family default.
+  OnoteSurfaces surfaces;
+
+  /// The engine sets both theme facts on the same build; one call so they
+  /// cannot step out of order.
+  void setTheme({required bool dark, required OnoteSurfaces surfaces}) {
+    this.dark = dark;
+    if (this.surfaces != surfaces) {
+      this.surfaces = surfaces;
+      _atomCache.clear();
+    }
+  }
 
   /// Resolves an in-flow image reference (`sha256:<hash>`) to bytes, so the
   /// picture is shown WHILE the block is being edited and not only after the
@@ -1699,8 +1718,7 @@ class LiveMarkdownController extends TextEditingController {
               fontFamilyFallback: onoteFontFallback,
               fontSize: (cBase.fontSize ?? 14) * 0.9,
               color: dark ? OnoteColors.ink300 : OnoteColors.ink700,
-              backgroundColor:
-                  dark ? OnoteColors.night100 : OnoteColors.paper100);
+              backgroundColor: surfaces.chrome2);
         case MdInline.strike:
           inner = cBase.copyWith(decoration: TextDecoration.lineThrough);
         case MdInline.subscript:

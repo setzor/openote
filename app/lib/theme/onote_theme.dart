@@ -163,9 +163,15 @@ String inkHexOf(Color c) =>
 /// The rule for anything added later: if a Material component can appear in
 /// the app, it gets a theme here. A component that inherits M3 defaults is a
 /// component that will look like a different product.
-ThemeData onoteTheme(Brightness brightness) {
+/// [surfaces] is the appearance's surface set (§3.7) — optional so every
+/// existing caller keeps answering the same theme it always did, and the
+/// catalogue (`theme/appearances.dart`) hands in True Black's set to build
+/// the OLED appearance without a second copy of this whole function. A null
+/// means "the default set for this brightness", which is what the app had
+/// before there was a catalogue at all.
+ThemeData onoteTheme(Brightness brightness, {OnoteSurfaces? surfaces}) {
   final dark = brightness == Brightness.dark;
-  final surfaces = dark ? OnoteSurfaces.dark : OnoteSurfaces.light;
+  surfaces ??= dark ? OnoteSurfaces.dark : OnoteSurfaces.light;
   final primary = dark ? OnoteColors.ink400 : OnoteColors.ink500;
   final scheme = ColorScheme(
     brightness: brightness,
@@ -178,7 +184,9 @@ ThemeData onoteTheme(Brightness brightness) {
     surface: surfaces.chrome,
     onSurface: surfaces.textPrimary,
     surfaceContainerHighest: surfaces.chrome2,
-    outline: dark ? OnoteColors.night300 : OnoteColors.paper300,
+    // The scheme outline follows the appearance's own border, not the
+    // brightness default — True Black's hairline must not glow purple.
+    outline: surfaces.border,
   );
 
   // The chrome ramp (style guide §4.2a) as Material's text theme, so anything

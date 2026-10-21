@@ -180,7 +180,7 @@ class _CodeBlockViewState extends State<CodeBlockView> {
 
     return Container(
       decoration: BoxDecoration(
-        color: dark ? OnoteColors.night100 : OnoteColors.paper100,
+        color: context.surfaces.chrome2,
         borderRadius: BorderRadius.circular(11),
       ),
       child: Column(
@@ -340,7 +340,7 @@ class _CodeBlockViewState extends State<CodeBlockView> {
     return [
       Divider(
           height: 1,
-          color: dark ? OnoteColors.night300 : OnoteColors.paper300),
+          color: context.surfaces.border),
       Padding(
         padding: const EdgeInsets.fromLTRB(10, 2, 4, 6),
         child: Column(
@@ -370,7 +370,7 @@ class _CodeBlockViewState extends State<CodeBlockView> {
                   defaultColumnWidth: const IntrinsicColumnWidth(),
                   border: TableBorder.all(
                       color:
-                          dark ? OnoteColors.night300 : OnoteColors.paper300,
+                          context.surfaces.border,
                       width: .5),
                   children: [
                     for (var r = 0; r < out.cells!.length; r++)

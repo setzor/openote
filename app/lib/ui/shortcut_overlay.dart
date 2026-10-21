@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../theme/onote_theme.dart';
+import '../theme/tokens.dart';
 import 'keyboard_map.dart';
 import 'onote_dialog.dart';
 
@@ -84,7 +85,7 @@ class _Keys extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
             decoration: BoxDecoration(
-              color: dark ? OnoteColors.night100 : OnoteColors.paper100,
+              color: context.surfaces.chrome2,
               border: Border.all(
                   color: dark
                       ? OnoteColors.graphite400.withValues(alpha: .45)

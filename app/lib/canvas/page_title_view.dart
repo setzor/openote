@@ -150,7 +150,7 @@ class _PageTitleViewState extends State<PageTitleView> {
           const SizedBox(height: 6),
           Container(
               height: 1,
-              color: dark ? OnoteColors.night200 : OnoteColors.paper200),
+              color: context.surfaces.chrome2),
         ],
       ),
     );

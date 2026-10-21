@@ -107,7 +107,7 @@ class _FlipCardState extends State<FlipCard>
     final pad = widget.compact ? OnoteSpace.x4 : OnoteSpace.x6;
     return Container(
       decoration: BoxDecoration(
-        color: dark ? OnoteColors.night100 : Colors.white,
+        color: dark ? context.surfaces.chrome2 : Colors.white,
         borderRadius: OnoteRadius.xlAll,
         border: Border.all(color: accent.withValues(alpha: .55), width: 1.5),
         boxShadow: [

@@ -9,6 +9,7 @@ import '../model/tags.dart';
 import '../editor/inline_math_editor.dart';
 import '../math/math_view.dart';
 import '../theme/onote_theme.dart';
+import '../theme/tokens.dart';
 import 'md_syntax.dart';
 import 'md_table.dart';
 import '../editor/flashcard_view.dart';
@@ -196,7 +197,7 @@ class _MarkdownViewState extends State<MarkdownView> {
         margin: const EdgeInsets.symmetric(vertical: 4),
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
-          color: dark ? OnoteColors.night100 : OnoteColors.paper100,
+          color: context.surfaces.chrome2,
           borderRadius: BorderRadius.circular(6),
         ),
         child: Text(fenceBuf.join('\n'),
@@ -330,7 +331,7 @@ class _MarkdownViewState extends State<MarkdownView> {
   }
 
   Widget _renderTable(BuildContext context, MdTable t, bool dark) {
-    final border = dark ? OnoteColors.night100 : OnoteColors.paper100;
+    final border = context.surfaces.chrome2;
     final scheme = Theme.of(context).colorScheme;
 
     TextAlign textAlign(int col) => switch (t.align[col]) {
@@ -697,7 +698,8 @@ TextStyle subSupStyle(TextStyle base, {required bool sup, required bool dark}) {
 List<InlineSpan> inlineSpans(String text, TextStyle base, bool dark,
     [void Function(String label, String? id)? onWikiLink,
     Color? Function(String latex)? mathLinkTint,
-    InlineAtomHost? atomHost]) {
+    InlineAtomHost? atomHost,
+    OnoteSurfaces? surfaces]) {
   final spans = <InlineSpan>[];
   final pattern = mdInlineRe;
   var last = 0;
@@ -852,7 +854,9 @@ List<InlineSpan> inlineSpans(String text, TextStyle base, bool dark,
             fontFamilyFallback: onoteFontFallback,
             fontSize: (base.fontSize ?? 14) * 0.9,
             color: dark ? OnoteColors.ink300 : OnoteColors.ink700,
-            backgroundColor: dark ? OnoteColors.night100 : OnoteColors.paper100,
+            backgroundColor:
+                (surfaces ?? (dark ? OnoteSurfaces.dark : OnoteSurfaces.light))
+                    .chrome2,
           ),
         ));
       case MdInline.strike:

@@ -30,20 +30,43 @@ void main() {
   var haveSqlite = false;
   setUpAll(() => haveSqlite = initSqliteForTests());
 
-  test('the registry holds the two appearances that exist today', () {
-    expect(appearances.map((a) => a.id), ['light', 'night-ink'],
-        reason: 'these two ids are the app the catalogue is built on; '
-            'removing either reverts somebody\'s saved choice');
+  test('the registry holds the appearances that exist today', () {
+    expect(appearances.map((a) => a.id), ['light', 'night-ink', 'true-black'],
+        reason: 'the first two ids are the app the catalogue is built on '
+            '(removing either reverts somebody\'s saved choice); true-black '
+            'is #12\'s headline ask');
     expect(appearances.map((a) => a.brightness),
-        [Brightness.light, Brightness.dark]);
+        [Brightness.light, Brightness.dark, Brightness.dark]);
+    // Exactly one default per family, or appearanceFor has no answer.
+    for (final b in Brightness.values) {
+      expect(
+          appearances.where((a) =>
+              a.brightness == b && a.isFamilyDefault).length, 1, reason: '$b family must have exactly one default');
+    }
   });
 
   test('an id the build does not know answers with the default', () {
     expect(appearanceById(null).id, 'light');
-    expect(appearanceById('true-black').id, 'light',
+    expect(appearanceById('rose-pine').id, 'light',
         reason: 'a saved choice from a newer Openote must not crash an '
             'older one — same rule as every other settings read');
     expect(appearanceById('night-ink').id, 'night-ink');
+    expect(appearanceById('true-black').id, 'true-black');
+  });
+
+  test('True Black paints pure black on its canvas and keeps Night ink\'s '
+      'text roles', () {
+    final tb = appearanceById('true-black');
+    final t = tb.buildTheme();
+    expect(t.extension<OnoteSurfaces>()!.canvas, const Color(0xFF000000),
+        reason: 'the OLED point: pixels off where the page is');
+    // Text roles are shared with Night ink — the words are not what changes.
+    expect(t.extension<OnoteSurfaces>()!.textPrimary, OnoteSurfaces.dark.textPrimary);
+    // And the ramp keeps its order: chrome above canvas, hairline above chrome.
+    final s = t.extension<OnoteSurfaces>()!;
+    expect(s.canvas.toARGB32() < s.chrome.toARGB32(), isTrue);
+    expect(s.chrome.toARGB32() < s.chrome2.toARGB32(), isTrue);
+    expect(s.chrome2.toARGB32() < s.border.toARGB32(), isTrue);
   });
 
   test('every registry entry paints with a working theme of its family', () {

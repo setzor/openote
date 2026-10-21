@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../model/models.dart';
 import '../state/app_state.dart';
+import '../theme/tokens.dart';
 import 'live_markdown_engine.dart';
 
 /// The rich-text **editor-engine seam** (ADR-0004).
@@ -78,6 +79,7 @@ class TextSurface {
     required this.baseStyle,
     required this.inset,
     required this.dark,
+    required this.surfaces,
     this.hintText,
   });
 
@@ -93,6 +95,12 @@ class TextSurface {
   final EdgeInsets inset;
 
   final bool dark;
+
+  /// The appearance's surface roles — same build, same source as [dark], and
+  /// held beside it for the same reason: a surface-picking style (the inline
+  /// code tint) must follow the appearance, which True Black proves is not a
+  /// function of brightness.
+  final OnoteSurfaces surfaces;
   final String? hintText;
 }
 

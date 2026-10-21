@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../l10n/l10n.dart';
 import '../model/inline_atom.dart';
 import '../theme/onote_theme.dart';
+import '../theme/tokens.dart';
 import 'inline_table.dart';
 
 /// **Everything an inline atom needs from the note it is sitting in.**
@@ -223,10 +224,9 @@ class _NewerVersion extends StatelessWidget {
       width: maxWidth == null ? 280 : (maxWidth! < 280 ? maxWidth : 280),
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       decoration: BoxDecoration(
-        border: Border.all(
-            color: dark ? OnoteColors.night300 : OnoteColors.paper300),
+        border: Border.all(color: context.surfaces.border),
         borderRadius: BorderRadius.circular(4),
-        color: dark ? OnoteColors.night100 : OnoteColors.paper100,
+        color: context.surfaces.chrome2,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

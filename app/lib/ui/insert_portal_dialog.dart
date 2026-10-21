@@ -6,6 +6,7 @@ import '../canvas/portal_view.dart';
 import '../model/models.dart';
 import '../state/app_state.dart';
 import '../theme/onote_theme.dart';
+import '../theme/tokens.dart';
 import 'onote_dialog.dart';
 
 /// Insert a live page window (EMBED-2): pick a page, then drag out the area of
@@ -190,7 +191,7 @@ class _InsertPortalDialogState extends State<_InsertPortalDialog> {
                   Positioned.fill(
                     child: DecoratedBox(
                       decoration: BoxDecoration(
-                        color: dark ? OnoteColors.night0 : OnoteColors.paper0,
+                        color: context.surfaces.canvas,
                         border: Border.all(
                             color: dark
                                 ? OnoteColors.night300

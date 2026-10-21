@@ -1161,7 +1161,7 @@ class _PageCanvasState extends State<PageCanvas> {
               onVerticalDragCancel: () =>
                   setState(() => _scrollbarDrag = false),
               child: Container(
-                color: (dark ? OnoteColors.night200 : OnoteColors.paper200)
+                color: context.surfaces.chrome2
                     .withValues(alpha: live ? .55 : .35),
               ),
             ),
@@ -1287,6 +1287,7 @@ class _PageCanvasState extends State<PageCanvas> {
                       pageSize: pageSize,
                       background: app.pageProps.background,
                       gridSize: app.gridSize,
+                      surfaces: context.surfaces,
                       dark: dark,
                       sheet: app.pageProps.isPaged
                           ? Size(app.pageProps.paper.width,
@@ -1422,7 +1423,7 @@ class _PageCanvasState extends State<PageCanvas> {
                         painter: _DragGridPainter(
                           controller: controller,
                           gridSize: app.gridSize,
-                          dark: dark,
+                          surfaces: context.surfaces,
                         ),
                       ),
                     ),
@@ -1768,6 +1769,7 @@ class _PagePainter extends CustomPainter {
     required this.pageSize,
     required this.background,
     required this.gridSize,
+    required this.surfaces,
     required this.dark,
     this.sheet,
     this.sheets = 1,
@@ -1776,6 +1778,13 @@ class _PagePainter extends CustomPainter {
   final Size pageSize;
   final String background;
   final double gridSize;
+
+  /// The appearance's surface roles, not a brightness flag: True Black paints
+  /// the same shapes on different colours, and a painter that asked only
+  /// `dark` could not tell them apart (§3.7 — the same rule the widgets
+  /// follow). [dark] stays for the ink choices — a shadow's strength is a
+  /// property of light against dark, not of one appearance's palette.
+  final OnoteSurfaces surfaces;
   final bool dark;
 
   /// The paper, when this page is in paged mode. Null on open canvas.
@@ -1786,7 +1795,7 @@ class _PagePainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final pageColor = dark ? OnoteColors.night0 : OnoteColors.paper0;
+    final pageColor = surfaces.canvas;
     final paper = sheet;
     if (paper != null) {
       // A SHEET has edges, and edges are the whole point of page mode: the
@@ -1794,7 +1803,7 @@ class _PagePainter extends CustomPainter {
       // pick up, and where one sheet ends the next begins. Canvas mode paints
       // the viewport all one colour precisely because it has no edges.
       canvas.drawRect(Offset.zero & size,
-          Paint()..color = dark ? OnoteColors.night200 : OnoteColors.paper200);
+          Paint()..color = surfaces.chrome2);
       final topLeft = controller.pageToScreen(Offset.zero);
       final w = paper.width * controller.scale;
       final h = paper.height * controller.scale;
@@ -1812,7 +1821,7 @@ class _PagePainter extends CustomPainter {
       _paintPattern(canvas, size);
       // The break between sheets, drawn last so it sits over the pattern.
       final edge = Paint()
-        ..color = dark ? OnoteColors.night300 : OnoteColors.paper300
+        ..color = surfaces.border
         ..strokeWidth = 1;
       for (var i = 1; i < sheets; i++) {
         final y = topLeft.dy + h * i;
@@ -1839,7 +1848,7 @@ class _PagePainter extends CustomPainter {
         const Offset(0, AppState.contentTop)).dy;
     final right = size.width, bottom = size.height;
     final paint = Paint()
-      ..color = dark ? OnoteColors.night200 : OnoteColors.paper200
+      ..color = surfaces.chrome2.withValues(alpha: .7)
       ..strokeWidth = 1;
     switch (background) {
       case 'grid':
@@ -1868,7 +1877,7 @@ class _PagePainter extends CustomPainter {
   @override
   bool shouldRepaint(covariant _PagePainter old) =>
       old.background != background ||
-      old.dark != dark ||
+      old.surfaces != surfaces ||
       old.sheet != sheet ||
       old.sheets != sheets ||
       old.pageSize != pageSize ||
@@ -1879,18 +1888,17 @@ class _PagePainter extends CustomPainter {
 /// Faint alignment grid shown only while a block is being dragged.
 class _DragGridPainter extends CustomPainter {
   _DragGridPainter(
-      {required this.controller, required this.gridSize, required this.dark});
+      {required this.controller, required this.gridSize, required this.surfaces});
   final CanvasController controller;
   final double gridSize;
-  final bool dark;
+  final OnoteSurfaces surfaces;
 
   @override
   void paint(Canvas canvas, Size size) {
     final step = gridSize * controller.scale;
     if (step < 6) return;
     final paint = Paint()
-      ..color = (dark ? OnoteColors.night200 : OnoteColors.paper200)
-          .withValues(alpha: .7)
+      ..color = surfaces.chrome2.withValues(alpha: .7)
       ..strokeWidth = 1;
     final ox = controller.offset.dx % step;
     final oy = controller.offset.dy % step;
@@ -1906,7 +1914,7 @@ class _DragGridPainter extends CustomPainter {
   bool shouldRepaint(covariant _DragGridPainter old) =>
       old.controller.scale != controller.scale ||
       old.controller.offset != controller.offset ||
-      old.dark != dark;
+      old.surfaces != surfaces;
 }
 
 /// Marquee rectangle + dashed outlines for selected ink blocks.

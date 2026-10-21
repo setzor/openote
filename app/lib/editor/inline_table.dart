@@ -8,6 +8,7 @@ import '../l10n/l10n.dart';
 import '../markdown/md_render.dart' show inlineSpans;
 import '../model/inline_atom.dart';
 import '../theme/onote_theme.dart';
+import '../theme/tokens.dart';
 import '../ui/link_dialog.dart';
 import 'live_markdown_controller.dart';
 
@@ -1232,9 +1233,12 @@ class _InlineTableState extends State<InlineTable> {
       if (at != null) _askForCell(at.row, at.col);
     }
 
-    final border = widget.dark ? OnoteColors.night300 : OnoteColors.paper300;
-    final headerFill =
-        widget.dark ? OnoteColors.night100 : OnoteColors.paper100;
+    // The table's own hairlines and header fill are surfaces, and follow the
+    // appearance's roles rather than the brightness — on True Black the
+    // header must not glow charcoal while the page around it is pure black.
+    final s = context.surfaces;
+    final border = s.border;
+    final headerFill = s.chrome2;
 
     var widths = _widths();
     var total = widths.fold(0.0, (a, b) => a + b) + 2;

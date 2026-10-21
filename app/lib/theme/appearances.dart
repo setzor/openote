@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'onote_theme.dart';
+import 'tokens.dart';
 
 /// **One built-in appearance, as data.**
 ///
@@ -21,6 +22,7 @@ class OnoteAppearance {
     required this.id,
     required this.brightness,
     required this.label,
+    this.surfaces,
   });
 
   /// Stable, machine-readable, and persisted (`Settings → appearanceId`).
@@ -44,7 +46,19 @@ class OnoteAppearance {
   /// cached by the registry: `MaterialApp` already memoises against its
   /// theme arguments, so a second build with the same appearance is free
   /// without the registry holding theme objects alive.
-  ThemeData buildTheme() => onoteTheme(brightness);
+  ThemeData buildTheme() => onoteTheme(brightness, surfaces: surfaces);
+
+  /// The surface set this appearance paints with — its own, or null for the
+  /// brightness family's default, which is the theme every caller before
+  /// the catalogue got. True Black answers `OnoteSurfaces.trueBlack`; Light
+  /// and Night ink answer null and keep the exact themes they always had.
+  final OnoteSurfaces? surfaces;
+
+  /// True when this is the brightness family's own default — what `System`
+  /// resolves to when the chosen appearance belongs to the other family
+  /// (see [appearanceFor]).
+  bool get isFamilyDefault =>
+      id == (brightness == Brightness.light ? 'light' : 'night-ink');
 }
 
 /// **The catalogue of built-in appearances, in Settings order.**
@@ -56,6 +70,14 @@ const List<OnoteAppearance> appearances = [
   OnoteAppearance(id: 'light', brightness: Brightness.light, label: 'Light'),
   OnoteAppearance(
       id: 'night-ink', brightness: Brightness.dark, label: 'Night ink'),
+  // The OLED appearance — #12's headline request. Dark family, so a student
+  // on Auto gets it only by choosing it; the family default above is what
+  // Auto still resolves to.
+  OnoteAppearance(
+      id: 'true-black',
+      brightness: Brightness.dark,
+      label: 'True Black',
+      surfaces: OnoteSurfaces.trueBlack),
 ];
 
 /// The entry [id] names, or the light default for an id this build does not
@@ -70,15 +92,15 @@ OnoteAppearance appearanceById(String? id) => appearances.firstWhere(
 /// choice [preferred].**
 ///
 /// Their choice wins when it belongs to the family the mode resolved to;
-/// otherwise the family's own entry serves, so System mode on a machine set
-/// dark still paints a dark theme even if the last concrete appearance they
-/// picked was light. With today's one-entry-per-family registry both
-/// branches answer the same entry, which is what keeps this refactor
-/// invisible.
+/// otherwise the family's own DEFAULT serves — Night ink for dark, not True
+/// Black, because a student who chose Light and set their computer to dark
+/// asked for "a dark theme", not for the OLED look specifically. With two
+/// dark entries in the catalogue this stops being academic: `firstWhere
+/// (brightness == b)` would hand True Black to everybody on Auto.
 OnoteAppearance appearanceFor(Brightness b, OnoteAppearance preferred) =>
     preferred.brightness == b
         ? preferred
-        : appearances.firstWhere((a) => a.brightness == b);
+        : appearances.firstWhere((a) => a.brightness == b && a.isFamilyDefault);
 
 /// **The two `ThemeData`s `MaterialApp` is handed for [mode], given the
 /// chosen [appearance].**

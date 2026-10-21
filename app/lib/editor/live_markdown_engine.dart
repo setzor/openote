@@ -1398,7 +1398,7 @@ class _LiveMarkdownSession extends OnoteEditSession {
 
   @override
   Widget build(BuildContext context, TextSurface s) {
-    controller.dark = s.dark;
+    controller.setTheme(dark: s.dark, surfaces: s.surfaces);
     // The only handle a session — which is not a widget — has on an Overlay,
     // for the inline equation editor to anchor itself in.
     _lastContext = context;
